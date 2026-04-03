@@ -1,11 +1,15 @@
 const axios = require('axios');
-//const qrcode = require('qrcode');
-const { HttpsProxyAgent } = require('https-proxy-agent');
+const qrcode = require('qrcode');
 
-const proxy = "http://ip.atlantic-server.com:64433";
-const agent = new HttpsProxyAgent(proxy);
-axios.defaults.httpsAgent = agent;
-axios.defaults.httpAgent = agent;
+// Proxy only used in local/non-Vercel environment
+let agent = null;
+if (!process.env.VERCEL) {
+    const { HttpsProxyAgent } = require('https-proxy-agent');
+    const proxy = "http://ip.atlantic-server.com:64433";
+    agent = new HttpsProxyAgent(proxy);
+    axios.defaults.httpsAgent = agent;
+    axios.defaults.httpAgent = agent;
+}
 
 class OrderKuota {
     static API_URL = 'https://app.orderkuota.com:443/api/v2';
@@ -117,9 +121,10 @@ class OrderKuota {
                 "requests[qris_history][ke_tanggal]": ""
             });
 
-            const res = await axios.post(url, data, {
-                headers, httpsAgent: agent
-            });
+            const reqOptions = { headers };
+            if (agent) reqOptions.httpsAgent = agent;
+
+            const res = await axios.post(url, data, reqOptions);
 
             return { status: true, data: res.data.qris_history?.results || [] };
         } catch (err) {
