@@ -1,15 +1,19 @@
 const axios = require('axios');
 const qrcode = require('qrcode');
+const { HttpsProxyAgent } = require('https-proxy-agent');
 
-// Proxy only used in local/non-Vercel environment
+// Proxy URL diambil dari environment variable
+// Set PROXY_URL di Vercel Dashboard > Settings > Environment Variables
+const PROXY_URL = process.env.PROXY_URL || "http://ip.atlantic-server.com:64433";
+
 let agent = null;
-if (!process.env.VERCEL) {
-    const { HttpsProxyAgent } = require('https-proxy-agent');
-    const proxy = "http://ip.atlantic-server.com:64433";
-    agent = new HttpsProxyAgent(proxy);
+if (PROXY_URL) {
+    agent = new HttpsProxyAgent(PROXY_URL);
     axios.defaults.httpsAgent = agent;
     axios.defaults.httpAgent = agent;
+    console.log(`[Proxy] Using proxy: ${PROXY_URL}`);
 }
+
 
 class OrderKuota {
     static API_URL = 'https://app.orderkuota.com:443/api/v2';
