@@ -1,5 +1,5 @@
 const axios = require('axios');
-const qrcode = require('qrcode');
+//const qrcode = require('qrcode');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 
 const proxy = "http://ip.atlantic-server.com:64433";
