@@ -1,6 +1,7 @@
 const axios = require('axios');
 const qrcode = require('qrcode');
-const { HttpsProxyAgent } = require('https-proxy-agent');
+// https-proxy-agent v5 uses default export (CommonJS compatible)
+const HttpsProxyAgent = require('https-proxy-agent');
 
 // Proxy URL diambil dari environment variable
 // Set PROXY_URL di Vercel Dashboard > Settings > Environment Variables
