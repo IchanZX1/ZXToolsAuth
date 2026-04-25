@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 const OrderKuota = require('./orkut/orkut-login.js');
+const OrderKuotaMutasi = require('./orkut/Mutasi.js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -56,6 +57,31 @@ app.post('/api/execute', async (req, res) => {
         }
 
         res.status(500).json({ success: false, error: errorMessage });
+    }
+});
+
+// New Dedicated Mutasi Endpoint
+app.post('/api/mutasi', async (req, res) => {
+    try {
+        const { username, authToken, proxy } = req.body;
+
+        const defaultUser = "ichanzx";
+        const defaultAuth = "2235420:YZCh9MKTDAX6yWE4Nt2joaf1dw5ikJxP";
+
+        const instanceUsername = username || defaultUser;
+        const instanceAuthToken = authToken || defaultAuth;
+
+        const mutasiService = new OrderKuotaMutasi(instanceUsername, instanceAuthToken, proxy);
+        const result = await mutasiService.fetchMutasi();
+
+        if (result.status) {
+            res.json({ success: true, data: result.data });
+        } else {
+            res.status(500).json({ success: false, error: result.error });
+        }
+    } catch (error) {
+        console.error(`[API Error] Mutasi:`, error.message);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
